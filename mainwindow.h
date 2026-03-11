@@ -20,9 +20,13 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
-private slots:
+    Rarity stringToRarity(QString str);
+
+    Transparensy stringToTransparensy(QString str);
+
     bool isValidInput(StoneEdit& dialog);
 
+private slots:
     void updateSummary();
 
     void on_addButton_clicked();

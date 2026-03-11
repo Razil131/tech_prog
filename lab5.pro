@@ -30,3 +30,5 @@ else:unix: LIBS += -L$$PWD/../tpu/labs/tech_pr/lab4/build/ -llab4
 
 INCLUDEPATH += $$PWD/../tpu/labs/tech_pr/lab4/include
 DEPENDPATH += $$PWD/../tpu/labs/tech_pr/lab4/include
+
+DISTFILES +=

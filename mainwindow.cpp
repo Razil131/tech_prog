@@ -29,9 +29,9 @@ bool MainWindow::isValidInput(StoneEdit& dialog) {
     double c = dialog.getCost().toDouble(&okC);
     double w = dialog.getCarats().toDouble(&okW);
 
-    if (!okH || !okC || !okW || h <= 0 || c <= 0 || w <= 0) {
-        return false;
-    }
+    // if (!okH || !okC || !okW || h <= 0 || c <= 0 || w <= 0) {
+    //     return false;
+    // }
     return true;
 }
 
@@ -43,14 +43,14 @@ void MainWindow::updateSummary()
                            .arg(necklace.GetTotalCost()));
 }
 
-Rarity stringToRarity(QString str) {
+Rarity MainWindow::stringToRarity(QString str) {
     if (str == "Low") return Rarity::LOW;
     if (str == "Medium") return Rarity::MEDIUM;
-    if (str == "High") return Rarity::HIGH;
+    if (str == "High") return Rarity::LOW;
     return Rarity::VERY_HIGH;
 }
 
-Transparensy stringToTransparensy(QString str) {
+Transparensy MainWindow::stringToTransparensy(QString str) {
     if (str == "Transparent") return Transparensy::TRANSPARENT;
     if (str == "Opaque") return Transparensy::OPAQUE;
     return Transparensy::TRANSLUCENT;
