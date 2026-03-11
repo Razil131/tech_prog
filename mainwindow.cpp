@@ -29,9 +29,9 @@ bool MainWindow::isValidInput(StoneEdit& dialog) {
     double c = dialog.getCost().toDouble(&okC);
     double w = dialog.getCarats().toDouble(&okW);
 
-    // if (!okH || !okC || !okW || h <= 0 || c <= 0 || w <= 0) {
-    //     return false;
-    // }
+    if (!okH || !okC || !okW || h <= 0 || c <= 0 || w <= 0) {
+       return false;
+    }
     return true;
 }
 
@@ -46,7 +46,7 @@ void MainWindow::updateSummary()
 Rarity MainWindow::stringToRarity(QString str) {
     if (str == "Low") return Rarity::LOW;
     if (str == "Medium") return Rarity::MEDIUM;
-    if (str == "High") return Rarity::LOW;
+    if (str == "High") return Rarity::HIGH;
     return Rarity::VERY_HIGH;
 }
 
