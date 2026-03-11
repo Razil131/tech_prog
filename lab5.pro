@@ -24,11 +24,11 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../tpu/labs/tech_pr/lab4/build/ -llab4
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../tpu/labs/tech_pr/lab4/build/ -llab4
-else:unix: LIBS += -L$$PWD/../tpu/labs/tech_pr/lab4/build/ -llab4
+INCLUDEPATH += $$PWD/../lab4/include
+DEPENDPATH  += $$PWD/../lab4/include
 
-INCLUDEPATH += $$PWD/../tpu/labs/tech_pr/lab4/include
-DEPENDPATH += $$PWD/../tpu/labs/tech_pr/lab4/include
+LIBS += -L$$PWD/../lab4/build -llab4
+
+win32: LIBS += -L$$PWD/../build-lab4-Desktop_x86_windows_msys_pe_64bit-Debug/debug -llab4
 
 DISTFILES +=
