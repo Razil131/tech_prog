@@ -16,6 +16,12 @@ public:
 
     void RemoveStone(std::shared_ptr<AbstractStone> stone);
     
+    void RemoveStoneAt(int index);
+
+    void ReplaceStoneAt(int index, std::shared_ptr<AbstractStone> newStone);
+
+    void UpdateTotals();
+    
     double GetTotalWeight(){
         return TotalWeight;
     }
