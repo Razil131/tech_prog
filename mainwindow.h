@@ -29,6 +29,8 @@ public:
 private slots:
     void updateSummary();
 
+    std::shared_ptr<AbstractStone> createStoneFromDialog(StoneEdit& dialog);
+
     void on_addButton_clicked();
 
     void on_deleteButton_clicked();

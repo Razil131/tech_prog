@@ -56,6 +56,41 @@ Transparensy MainWindow::stringToTransparensy(QString str) {
     return Transparensy::TRANSLUCENT;
 }
 
+std::shared_ptr<AbstractStone> MainWindow::createStoneFromDialog(StoneEdit& dialog) {
+    StoneData data;
+    data.hardness = dialog.getHardness().toDouble();
+    data.cost     = dialog.getCost().toDouble();
+    data.carats   = dialog.getCarats().toDouble();
+
+    QString type = dialog.getStoneType();
+
+    if (type == "Ruby") {
+        data.rarityLevel = stringToRarity(dialog.getInput4());
+        data.fluorescence = dialog.getInput5().toStdString();
+        return StoneFactory::CreateRuby(data);
+    }
+    else if (type == "Sapphire") {
+        data.rarityLevel = stringToRarity(dialog.getInput4());
+        data.color = dialog.getInput5().toStdString();
+        return StoneFactory::CreateSapphire(data);
+    }
+    else if (type == "Amethyst") {
+        data.transparensyLevel = stringToTransparensy(dialog.getInput4());
+        data.shade = dialog.getInput5().toStdString();
+        return StoneFactory::CreateAmethyst(data);
+    }
+    return nullptr;
+}
+
+void SetData(StoneEdit& dialog, QListWidgetItem* item){
+    item->setData(TypeRole, dialog.getStoneType());
+    item->setData(HardnessRole, dialog.getHardness());
+    item->setData(CaratsRole, dialog.getCarats());
+    item->setData(CostRole, dialog.getCost());
+    item->setData(Input4Role, dialog.getInput4());
+    item->setData(Input5Role, dialog.getInput5());
+}
+
 void MainWindow::on_addButton_clicked() {
     StoneEdit dialog(this);
     if(dialog.exec() == QDialog::Accepted) {
@@ -63,55 +98,19 @@ void MainWindow::on_addButton_clicked() {
             QMessageBox::warning(this, "Error", "Please, enter the correct values!");
             return;
         }
-        double hardness = dialog.getHardness().toDouble();
-        double cost     = dialog.getCost().toDouble();
-        double carats   = dialog.getCarats().toDouble();
 
-        QString stoneType = dialog.getStoneType();
-        std::shared_ptr<AbstractStone> stone = nullptr;
-
-        if (stoneType == "Ruby") {
-            stone = StoneFactory::CreateRuby(
-                hardness,
-                cost,
-                carats,
-                stringToRarity(dialog.getInput4()),
-                dialog.getInput5().toStdString()
-                );
-        }
-        else if (stoneType == "Sapphire") {
-            stone = StoneFactory::CreateSapphire(
-                hardness,
-                cost,
-                carats,
-                stringToRarity(dialog.getInput4()),
-                dialog.getInput5().toStdString()
-                );
-        }
-        else if (stoneType == "Amethyst") {
-            stone = StoneFactory::CreateAmethyst(
-                hardness,
-                cost,
-                carats,
-                stringToTransparensy(dialog.getInput4()),
-                dialog.getInput5().toStdString()
-                );
-        }
+        auto stone = createStoneFromDialog(dialog);
 
         if (stone) {
             necklace.AddStone(stone);
             QListWidgetItem* item = new QListWidgetItem(ui->list);
-            item->setData(TypeRole, stoneType);
-            item->setData(HardnessRole, dialog.getHardness());
-            item->setData(CaratsRole, dialog.getCarats());
-            item->setData(CostRole, dialog.getCost());
-            item->setData(Input4Role, dialog.getInput4());
-            item->setData(Input5Role, dialog.getInput5());
 
-            item->setText(QString("%1-%2kr-%3$/kr")
-                              .arg(stoneType)
-                              .arg(carats)
-                              .arg(cost));
+            SetData(dialog,item);
+
+            item->setText(QString("%1 - %2 kr - %3 $/kr")
+                              .arg(dialog.getStoneType())
+                              .arg(stone->GetWeight())
+                              .arg(stone->GetCost()));
 
             updateSummary();
         }
@@ -131,8 +130,7 @@ void MainWindow::on_deleteButton_clicked()
     }
 }
 
-void MainWindow::on_editButton_clicked()
-{
+void MainWindow::on_editButton_clicked() {
     int currentRow = ui->list->currentRow();
     QListWidgetItem* item = ui->list->currentItem();
     if(!item || currentRow == -1) return;
@@ -145,55 +143,23 @@ void MainWindow::on_editButton_clicked()
     dialog.setInput4(item->data(Input4Role).toString());
     dialog.setInput5(item->data(Input5Role).toString());
 
-    if(dialog.exec() == QDialog::Accepted)
-    {
+    if(dialog.exec() == QDialog::Accepted) {
         if (!isValidInput(dialog)) {
-            QMessageBox::warning(this, "Error", "Changes didn't saved:Incorrect values");
+            QMessageBox::warning(this, "Error", "Changes not saved: Incorrect values");
             return;
         }
-        double hardness = dialog.getHardness().toDouble();
-        double cost     = dialog.getCost().toDouble();
-        double carats   = dialog.getCarats().toDouble();
-        QString type    = dialog.getStoneType();
 
-        std::shared_ptr<AbstractStone> newStone = nullptr;
-
-        if (type == "Ruby") {
-            newStone = StoneFactory::CreateRuby(
-                hardness, cost, carats,
-                stringToRarity(dialog.getInput4()),
-                dialog.getInput5().toStdString()
-                );
-        }
-        else if (type == "Sapphire") {
-            newStone = StoneFactory::CreateSapphire(
-                hardness, cost, carats,
-                stringToRarity(dialog.getInput4()),
-                dialog.getInput5().toStdString()
-                );
-        }
-        else if (type == "Amethyst") {
-            newStone = StoneFactory::CreateAmethyst(
-                hardness, cost, carats,
-                stringToTransparensy(dialog.getInput4()),
-                dialog.getInput5().toStdString()
-                );
-        }
+        auto newStone = createStoneFromDialog(dialog);
 
         if (newStone) {
             necklace.ReplaceStoneAt(currentRow, newStone);
 
-            item->setData(TypeRole, type);
-            item->setData(HardnessRole, dialog.getHardness());
-            item->setData(CaratsRole, dialog.getCarats());
-            item->setData(CostRole, dialog.getCost());
-            item->setData(Input4Role, dialog.getInput4());
-            item->setData(Input5Role, dialog.getInput5());
+            SetData(dialog,item);
 
-            item->setText(QString("%1-%2kr-%3$/kr")
-                              .arg(type)
-                              .arg(carats)
-                              .arg(cost));
+            item->setText(QString("%1 - %2 kr - %3 $/kr")
+                              .arg(dialog.getStoneType())
+                              .arg(newStone->GetWeight())
+                              .arg(newStone->GetCost()));
 
             updateSummary();
         }
